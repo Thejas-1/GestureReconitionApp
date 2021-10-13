@@ -16,10 +16,18 @@ import android.widget.Button;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class Screen_3_Vid_Record extends AppCompatActivity implements LocationListener {
 
@@ -36,6 +44,30 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
             @Override
             public void onClick(View v) {
                 startRecording();
+            }
+        });
+
+        Button upload = (Button) findViewById(R.id.button6);
+        upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OkHttpClient httpClient = new OkHttpClient();
+                Request request = new Request.Builder().url("http://192.168.1.9:5000/").build();
+                httpClient.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        System.out.println("Network Not Found");
+                        //Toast.makeText(Screen_3_Vid_Record.this,"Network Not Found",Toast.LENGTH_LONG);
+
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                        System.out.println("Network Found"+response.body().string());
+                        //Toast.makeText(Screen_3_Vid_Record.this,response.body().string(),Toast.LENGTH_LONG);
+
+                    }
+                });
             }
         });
 
@@ -129,6 +161,7 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(this, "Video recording cancelled.",
                         Toast.LENGTH_LONG).show();
+
             } else {
                 Toast.makeText(this, "Failed to record video",
                         Toast.LENGTH_LONG).show();
