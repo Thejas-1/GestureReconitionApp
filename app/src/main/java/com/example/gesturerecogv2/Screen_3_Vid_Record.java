@@ -1,16 +1,22 @@
 package com.example.gesturerecogv2;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -18,21 +24,49 @@ import android.widget.VideoView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class Screen_3_Vid_Record extends AppCompatActivity implements LocationListener {
 
     private Uri fileUri;
     private static final int VIDEO_CAPTURE = 101;
+    public void provideStoragePermissions(Activity activity) {
+
+        /*ActivityCompat.checkSelfPermission(activity, "WRITE");
+        ActivityCompat.checkSelfPermission(activity, "WRITEPERMISSIONS");*/
+        int storagePermissionForAndroid = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        String[] StoragePer = {
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.CAMERA
+
+        };
+
+        if (storagePermissionForAndroid != PackageManager.PERMISSION_GRANTED) {
+            Log.i("log", "Read/Write Permissions needed!");
+        }
+
+        ActivityCompat.requestPermissions(
+                activity,
+                StoragePer,
+                1
+        );
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +85,39 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                provideStoragePermissions(Screen_3_Vid_Record.this);
                 OkHttpClient httpClient = new OkHttpClient();
-                Request request = new Request.Builder().url("http://192.168.1.9:5000/").build();
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
+                // Read BitMap by file path
+                Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"/my_folder/videoFile.mp4", options);
+                //bitmap.compress(Bitmap.CompressFormat.MP4, 100, stream);
+                byte[] byteArray = stream.toByteArray();
+                File root=new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/my_folder/videoFile.mp4");  //you can replace RecordVideo by the specific folder where you want to save the video
+                /*if (!root.exists()) {
+                    System.out.println("No directory");
+                    root.mkdirs();
+                }
+
+                File file;
+                file=new File(root,"videoFile.mp4" );
+                FileOutputStream fos = null;*/
+
+                /*try {
+                    fos = new FileOutputStream(file);
+
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                bos.write(fos);
+                byte[] byteArray = stream.toByteArray();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }*/
+                RequestBody postBodyImage = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("video_file", "videoFile.mp4", RequestBody.create(MediaType.parse("/"), root))
+                        .build();
+                Request request = new Request.Builder().url("http://192.168.1.9:5000/").post(postBodyImage).build();
                 httpClient.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
