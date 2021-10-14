@@ -102,7 +102,10 @@ public class Screen_2_Practice extends AppCompatActivity {
         practice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Bundle b = new Bundle();
+                b.putString("selectedItem",b.getString("selectedItem"));
                 Intent newIntent = new Intent(Screen_2_Practice.this,Screen_3_Vid_Record.class);
+                newIntent.putExtras(b);
                 startActivity(newIntent);
             }
         });

@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
 
+
         if(intent.resolveActivity(getPackageManager()) != null){
             startActivityForResult(intent, VIDEO_CAPTURE);
         }

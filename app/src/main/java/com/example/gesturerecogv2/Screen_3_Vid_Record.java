@@ -44,6 +44,7 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
 
     private Uri fileUri;
     private static final int VIDEO_CAPTURE = 101;
+    private int vidindex = 0;
     public void provideStoragePermissions(Activity activity) {
 
         /*ActivityCompat.checkSelfPermission(activity, "WRITE");
@@ -158,6 +159,8 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+        intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT,5);
+        //intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
 
         if(intent.resolveActivity(getPackageManager()) != null){
             startActivityForResult(intent, VIDEO_CAPTURE);
@@ -199,7 +202,7 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
                     }
 
                     File file;
-                    file=new File(root,"videoFile.mp4" );
+                    file=new File(root,getIntent().getExtras().getString("selectedItem") + vidindex );
 
                     FileOutputStream fos = null;
 
