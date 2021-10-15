@@ -104,12 +104,17 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
                 Global g = Global.getInstance();
                 List<File> listOfVideos = new ArrayList<>();
                 File root=new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/my_folder/videoFile.mp4");  //you can replace RecordVideo by the specific folder where you want to save the video
-                File vidFiles[] = new File[vidindex];
-                for(int i=0;i<vidindex; i++){
+                int temporary = g.getGestureNumber(vidFileName)-1-g.getCurPos();
+                System.out.println("g.getCurPos:"+g.getCurPos()+" g.getGestureNumber(vidFileName):"+g.getGestureNumber(vidFileName)+" g.getCounter(g.getGestureNumber(vidFileName)-1):"+g.getCounter(g.getGestureNumber(vidFileName)-1));
+                System.out.println(temporary);
+                File vidFiles[] = new File[g.getCounter(g.getGestureNumber(vidFileName)-1)-g.getCurPos()];
+
+                for(int i=g.getCurPos();i<g.getCounter(g.getGestureNumber(vidFileName)-1); i++){
+
                     /*File vidFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/my_folder/"+vidFileName+"_Naik.mp4");  //you can replace RecordVideo by the specific folder where you want to save the video
                     listOfVideos.add(vidFile);*/
                     int temp = i+1;
-                    vidFiles[i] = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/my_folder/"+vidFileName+"_PRACTICE_"+temp+"_Naik.mp4");  //you can replace RecordVideo by the specific folder where you want to save the video
+                    vidFiles[i-g.getCurPos()] = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/my_folder/"+g.getGestureNameMapper(vidFileName)+"_PRACTICE_"+temp+"_Naik.mp4");  //you can replace RecordVideo by the specific folder where you want to save the video
                 }
                 /*if (!root.exists()) {
                     System.out.println("No directory");
@@ -129,10 +134,38 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }*/
-                for(int i = 0;i<vidindex;i++) {
+
+                /*for(int i=1;i<=17;i++){
+                    if(g.getCounter(i) != 0){
+                        for(int j=0;j<g.getCounter(i);j++){
+                            RequestBody postBodyImage = new MultipartBody.Builder()
+                                    .setType(MultipartBody.FORM)
+                                    .addFormDataPart("video_file", vidFiles[j].getName(), RequestBody.create(MediaType.parse("/"), vidFiles[j]))
+                                    .build();
+                            Request request = new Request.Builder().url("http://192.168.1.9:5000/").post(postBodyImage).build();
+                            httpClient.newCall(request).enqueue(new Callback() {
+                                @Override
+                                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                    System.out.println("Network Not Found");
+                                    //Toast.makeText(Screen_3_Vid_Record.this,"Network Not Found",Toast.LENGTH_LONG);
+
+                                }
+
+                                @Override
+                                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                                    System.out.println("Network Found" + response.body().string());
+                                    //Toast.makeText(Screen_3_Vid_Record.this,response.body().string(),Toast.LENGTH_LONG);
+
+                                }
+                            });
+                        }
+                    }
+                }*/
+                System.out.println("g.getCurPos:"+g.getCurPos()+" g.getGestureNumber(vidFileName):"+g.getGestureNumber(vidFileName)+" g.getCounter(g.getGestureNumber(vidFileName)-1):"+g.getCounter(g.getGestureNumber(vidFileName)-1));
+                for(int i = g.getCurPos();i<g.getCounter(g.getGestureNumber(vidFileName)-1);i++) {
                     RequestBody postBodyImage = new MultipartBody.Builder()
                             .setType(MultipartBody.FORM)
-                            .addFormDataPart("video_file", vidFiles[i].getName(), RequestBody.create(MediaType.parse("/"), vidFiles[i]))
+                            .addFormDataPart("video_file", vidFiles[i-g.getCurPos()].getName(), RequestBody.create(MediaType.parse("/"), vidFiles[i-g.getCurPos()]))
                             .build();
                     Request request = new Request.Builder().url("http://192.168.1.9:5000/").post(postBodyImage).build();
                     httpClient.newCall(request).enqueue(new Callback() {
@@ -222,7 +255,9 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
                     }
 
                     File file;
-                    file=new File(root,vidFileName + "_PRACTICE_" + (++vidindex) +"_Naik.mp4");
+                    Global g = Global.getInstance();
+                    g.setCounter(g.getGestureNumber(vidFileName)-1);
+                    file=new File(root,g.getGestureNameMapper(vidFileName) + "_PRACTICE_" + (g.getCounter(g.getGestureNumber(vidFileName)-1)) +"_Naik.mp4");
 
                     FileOutputStream fos = null;
 

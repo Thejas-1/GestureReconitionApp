@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Spinner symptomDropdown = (Spinner) findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.gestures, android.R.layout.simple_spinner_item);
 
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item);
         symptomDropdown.setAdapter(adapter);
 

@@ -23,6 +23,10 @@ public class Screen_2_Practice extends AppCompatActivity {
 
         Bundle b = getIntent().getExtras();
         selectedString = b.getString("selectedItem");
+
+        Global g = Global.getInstance();
+        g.setCurPos(g.getCounter(g.getGestureNumber(selectedString)-1));
+
         System.out.println("Selected Value"+ b.getString("selectedItem"));
         switch (b.getString("selectedItem")){
             case "Turn on lights":
