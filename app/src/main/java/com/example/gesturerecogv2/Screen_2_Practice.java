@@ -11,6 +11,7 @@ import android.widget.VideoView;
 
 public class Screen_2_Practice extends AppCompatActivity {
     private String pathToVideo = "android.resource://com.example.gesturerecog/";
+    private String selectedString = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +22,7 @@ public class Screen_2_Practice extends AppCompatActivity {
 
 
         Bundle b = getIntent().getExtras();
+        selectedString = b.getString("selectedItem");
         System.out.println("Selected Value"+ b.getString("selectedItem"));
         switch (b.getString("selectedItem")){
             case "Turn on lights":
@@ -103,7 +105,8 @@ public class Screen_2_Practice extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Bundle b = new Bundle();
-                b.putString("selectedItem",b.getString("selectedItem"));
+                b.putString("selectedItem",selectedString);
+                System.out.println("Sent String"+selectedString);
                 Intent newIntent = new Intent(Screen_2_Practice.this,Screen_3_Vid_Record.class);
                 newIntent.putExtras(b);
                 startActivity(newIntent);

@@ -30,6 +30,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -43,6 +45,7 @@ import okhttp3.Response;
 public class Screen_3_Vid_Record extends AppCompatActivity implements LocationListener {
 
     private Uri fileUri;
+    private String vidFileName = "";
     private static final int VIDEO_CAPTURE = 101;
     private int vidindex = 0;
     public void provideStoragePermissions(Activity activity) {
@@ -74,6 +77,9 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_screen_3__vid__record);
 
+        System.out.println("Intent Values"+getIntent().getExtras().getString("selectedItem"));
+        vidFileName = getIntent().getExtras().getString("selectedItem");
+
         Button record = (Button) findViewById(R.id.button5);
         record.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,10 +98,19 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.RGB_565;
                 // Read BitMap by file path
-                Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"/my_folder/videoFile.mp4", options);
+                //Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"/my_folder/videoFile.mp4", options);
                 //bitmap.compress(Bitmap.CompressFormat.MP4, 100, stream);
                 byte[] byteArray = stream.toByteArray();
+                Global g = Global.getInstance();
+                List<File> listOfVideos = new ArrayList<>();
                 File root=new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/my_folder/videoFile.mp4");  //you can replace RecordVideo by the specific folder where you want to save the video
+                File vidFiles[] = new File[vidindex];
+                for(int i=0;i<vidindex; i++){
+                    /*File vidFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/my_folder/"+vidFileName+"_Naik.mp4");  //you can replace RecordVideo by the specific folder where you want to save the video
+                    listOfVideos.add(vidFile);*/
+                    int temp = i+1;
+                    vidFiles[i] = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/my_folder/"+vidFileName+"_PRACTICE_"+temp+"_Naik.mp4");  //you can replace RecordVideo by the specific folder where you want to save the video
+                }
                 /*if (!root.exists()) {
                     System.out.println("No directory");
                     root.mkdirs();
@@ -114,26 +129,30 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }*/
-                RequestBody postBodyImage = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-                        .addFormDataPart("video_file", "videoFile.mp4", RequestBody.create(MediaType.parse("/"), root))
-                        .build();
-                Request request = new Request.Builder().url("http://192.168.1.9:5000/").post(postBodyImage).build();
-                httpClient.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                        System.out.println("Network Not Found");
-                        //Toast.makeText(Screen_3_Vid_Record.this,"Network Not Found",Toast.LENGTH_LONG);
+                for(int i = 0;i<vidindex;i++) {
+                    RequestBody postBodyImage = new MultipartBody.Builder()
+                            .setType(MultipartBody.FORM)
+                            .addFormDataPart("video_file", vidFiles[i].getName(), RequestBody.create(MediaType.parse("/"), vidFiles[i]))
+                            .build();
+                    Request request = new Request.Builder().url("http://192.168.1.9:5000/").post(postBodyImage).build();
+                    httpClient.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            System.out.println("Network Not Found");
+                            //Toast.makeText(Screen_3_Vid_Record.this,"Network Not Found",Toast.LENGTH_LONG);
 
-                    }
+                        }
 
-                    @Override
-                    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                        System.out.println("Network Found"+response.body().string());
-                        //Toast.makeText(Screen_3_Vid_Record.this,response.body().string(),Toast.LENGTH_LONG);
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                            System.out.println("Network Found" + response.body().string());
+                            //Toast.makeText(Screen_3_Vid_Record.this,response.body().string(),Toast.LENGTH_LONG);
 
-                    }
-                });
+                        }
+                    });
+                }
+                Intent intent = new Intent(Screen_3_Vid_Record.this, MainActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -160,6 +179,7 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
 
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
         intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT,5);
+        intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
         //intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
 
         if(intent.resolveActivity(getPackageManager()) != null){
@@ -202,7 +222,7 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
                     }
 
                     File file;
-                    file=new File(root,getIntent().getExtras().getString("selectedItem") + vidindex );
+                    file=new File(root,vidFileName + "_PRACTICE_" + (++vidindex) +"_Naik.mp4");
 
                     FileOutputStream fos = null;
 
