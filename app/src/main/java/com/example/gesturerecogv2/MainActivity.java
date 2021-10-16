@@ -66,142 +66,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         });
     }
 
-    private boolean hasCamera() {
-        if (getPackageManager().hasSystemFeature(
-                PackageManager.FEATURE_CAMERA_ANY)){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public void startRecording()
-    {
-
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
-
-
-        if(intent.resolveActivity(getPackageManager()) != null){
-            startActivityForResult(intent, VIDEO_CAPTURE);
-        }
-
-    }
-
-    //@Override
-    protected void onPostExecute(String text){
-        VideoView vv = (VideoView) findViewById(R.id.videoView);
-        vv.setVideoPath(Environment.getExternalStorageDirectory()+"/my_folder/Action1.mp4");
-        vv.start();
-        Button bt4 = (Button)findViewById(R.id.button3);
-        bt4.setEnabled(true);
-    }
-
-
-    public class DownloadTask extends AsyncTask<String, String, String> {
-
-        @Override
-        protected void onPreExecute() {
-            Toast.makeText(getApplicationContext(), "Starting to execute Background Task", Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        protected String doInBackground(String... text) {
-
-            File SDCardRoot = Environment.getExternalStorageDirectory(); // location where you want to store
-            File directory = new File(SDCardRoot, "/my_folder/"); //create directory to keep your downloaded file
-            if (!directory.exists())
-            {
-                directory.mkdir();
-            }
-
-            String fileName = "Action1" + ".mp4";
-            try
-            {
-                InputStream input = null;
-                try{
-
-                    URL url = new URL("https://www.signingsavvy.com/media/mp4-ld/7/7231.mp4"); // link of the song which you want to download like (http://...)
-                    HttpsURLConnection urlConnection = (HttpsURLConnection) url.openConnection();
-                    urlConnection.setRequestMethod("POST");
-                    urlConnection.setReadTimeout(95 * 1000);
-                    urlConnection.setConnectTimeout(95 * 1000);
-                    urlConnection.setDoInput(true);
-                    urlConnection.setRequestProperty("Accept", "application/json");
-                    urlConnection.setRequestProperty("X-Environment", "android");
-
-
-                    urlConnection.setHostnameVerifier(new HostnameVerifier() {
-                        @Override
-                        public boolean verify(String hostname, SSLSession session) {
-                            /** if it necessarry get url verfication */
-                            //return HttpsURLConnection.getDefaultHostnameVerifier().verify("your_domain.com", session);
-                            return true;
-                        }
-                    });
-                    urlConnection.setSSLSocketFactory((SSLSocketFactory) SSLSocketFactory.getDefault());
-
-
-                    urlConnection.connect();
-                    input = urlConnection.getInputStream();
-                    OutputStream output = new FileOutputStream(new File(directory, fileName));
-
-                    try {
-                        byte[] buffer = new byte[1024];
-                        int bytesRead = 0;
-                        while ((bytesRead = input.read(buffer, 0, buffer.length)) >= 0)
-                        {
-                            output.write(buffer, 0, bytesRead);
-
-                        }
-                        output.close();
-                    }
-                    catch (Exception exception)
-                    {
-                        Log.d("Error", String.valueOf(exception));
-                        publishProgress(String.valueOf(exception));
-                        output.close();
-
-                    }
-                }
-                catch (Exception exception)
-                {
-                    publishProgress(String.valueOf(exception));
-
-                }
-                finally
-                {
-                    input.close();
-                }
-            }
-            catch (Exception exception)
-            {
-                publishProgress(String.valueOf(exception));
-            }
-
-            return "true";
-        }
-
-
-
-
-
-        @Override
-        protected void onProgressUpdate(String... text) {
-            Toast.makeText(getApplicationContext(), "In Background Task" + text[0], Toast.LENGTH_LONG).show();
-        }
-
-        @Override
-        protected void onPostExecute(String text){
-            VideoView vv = (VideoView) findViewById(R.id.videoView);
-            vv.setVideoPath(Environment.getExternalStorageDirectory()+"/my_folder/Action1.mp4");
-            vv.start();
-            Button bt4 = (Button)findViewById(R.id.button3);
-            bt4.setEnabled(true);
-        }
-    }
-
     @Override
     public void onLocationChanged(Location location) {
         Toast.makeText(getApplicationContext(),"Current Longitute: " + location.getLongitude() + " Current Latitude: " + location.getLatitude(), Toast.LENGTH_LONG).show();
@@ -267,49 +131,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
+    /**
+     Select a specific item from dropdown.
+     **/
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         Spinner dropDown = (Spinner) findViewById(R.id.spinner);
         selectedItem = dropDown.getSelectedItem().toString();
-        /*switch (dropDown.getSelectedItem().toString()){
-            case "Turn on lights":
-                break;
-            case "Turn off lights":
-                break;
-            case "Turn on fan":
-                break;
-            case "Turn off fan":
-                break;
-            case "Increase Fan Speed":
-                break;
-            case "decrease fan speed":
-                break;
-            case "Set Thermostat to specified temperature":
-                break;
-            case "0":
-                break;
-            case "1":
-                break;
-            case "2":
-                break;
-            case "3":
-                break;
-            case "4":
-                break;
-            case "5":
-                break;
-            case "6":
-                break;
-            case "7":
-                break;
-            case "8":
-                break;
-            case "9":
-                break;
-
-            default:
-                break;
-        }*/
     }
 
     @Override

@@ -29,6 +29,7 @@ public class Screen_2_Practice extends AppCompatActivity {
         Global g = Global.getInstance();
         g.setCurPos(g.getCounter(g.getGestureNumber(selectedString)-1));
 
+        //Get the selected Item from screen 1
         System.out.println("Selected Value"+ b.getString("selectedItem"));
         switch (b.getString("selectedItem")){
             case "Turn on lights":
@@ -87,6 +88,7 @@ public class Screen_2_Practice extends AppCompatActivity {
                 break;
         }
 
+        //View to play the recorded video
         VideoView videoView = (VideoView) findViewById(R.id.videoView);
         playVideo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +100,7 @@ public class Screen_2_Practice extends AppCompatActivity {
             }
         });
 
+        //Navigate to previous screen
         Button goBack = (Button) findViewById(R.id.button3);
         goBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,6 +110,7 @@ public class Screen_2_Practice extends AppCompatActivity {
             }
         });
 
+        //Coditions to check for before proceeding to screen 3
         Button practice = (Button) findViewById(R.id.button4);
         practice.setOnClickListener(new View.OnClickListener() {
             @Override

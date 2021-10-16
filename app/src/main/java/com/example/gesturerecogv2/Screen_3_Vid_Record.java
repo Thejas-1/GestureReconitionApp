@@ -88,6 +88,7 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
             }
         });
 
+        //Upload the recorded video to server
         Button upload = (Button) findViewById(R.id.button6);
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,9 +98,7 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.RGB_565;
-                // Read BitMap by file path
-                //Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)+"/my_folder/videoFile.mp4", options);
-                //bitmap.compress(Bitmap.CompressFormat.MP4, 100, stream);
+
                 byte[] byteArray = stream.toByteArray();
                 Global g = Global.getInstance();
                 List<File> listOfVideos = new ArrayList<>();
@@ -111,56 +110,11 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
 
                 for(int i=g.getCurPos();i<g.getCounter(g.getGestureNumber(vidFileName)-1); i++){
 
-                    /*File vidFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/my_folder/"+vidFileName+"_Naik.mp4");  //you can replace RecordVideo by the specific folder where you want to save the video
-                    listOfVideos.add(vidFile);*/
+
                     int temp = i+1;
                     vidFiles[i-g.getCurPos()] = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"/my_folder/"+g.getGestureNameMapper(vidFileName)+"_PRACTICE_"+temp+"_Naik.mp4");  //you can replace RecordVideo by the specific folder where you want to save the video
                 }
-                /*if (!root.exists()) {
-                    System.out.println("No directory");
-                    root.mkdirs();
-                }
 
-                File file;
-                file=new File(root,"videoFile.mp4" );
-                FileOutputStream fos = null;*/
-
-                /*try {
-                    fos = new FileOutputStream(file);
-
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                bos.write(fos);
-                byte[] byteArray = stream.toByteArray();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }*/
-
-                /*for(int i=1;i<=17;i++){
-                    if(g.getCounter(i) != 0){
-                        for(int j=0;j<g.getCounter(i);j++){
-                            RequestBody postBodyImage = new MultipartBody.Builder()
-                                    .setType(MultipartBody.FORM)
-                                    .addFormDataPart("video_file", vidFiles[j].getName(), RequestBody.create(MediaType.parse("/"), vidFiles[j]))
-                                    .build();
-                            Request request = new Request.Builder().url("http://192.168.1.9:5000/").post(postBodyImage).build();
-                            httpClient.newCall(request).enqueue(new Callback() {
-                                @Override
-                                public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                                    System.out.println("Network Not Found");
-                                    //Toast.makeText(Screen_3_Vid_Record.this,"Network Not Found",Toast.LENGTH_LONG);
-
-                                }
-
-                                @Override
-                                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                                    System.out.println("Network Found" + response.body().string());
-                                    //Toast.makeText(Screen_3_Vid_Record.this,response.body().string(),Toast.LENGTH_LONG);
-
-                                }
-                            });
-                        }
-                    }
-                }*/
                 System.out.println("g.getCurPos:"+g.getCurPos()+" g.getGestureNumber(vidFileName):"+g.getGestureNumber(vidFileName)+" g.getCounter(g.getGestureNumber(vidFileName)-1):"+g.getCounter(g.getGestureNumber(vidFileName)-1));
                 for(int i = g.getCurPos();i<g.getCounter(g.getGestureNumber(vidFileName)-1);i++) {
                     RequestBody postBodyImage = new MultipartBody.Builder()
@@ -205,6 +159,9 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
         }
     }
 
+    /**
+     * Record the video with front camera for a duration of 5 seconds
+     */
     public void startRecording()
     {
 
@@ -229,6 +186,12 @@ public class Screen_3_Vid_Record extends AppCompatActivity implements LocationLi
         bt4.setEnabled(true);
     }
 
+    /**
+     * Save the Video after recording to then use it to send it to server
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
