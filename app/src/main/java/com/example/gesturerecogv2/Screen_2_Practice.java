@@ -7,11 +7,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 public class Screen_2_Practice extends AppCompatActivity {
     private String pathToVideo = "android.resource://com.example.gesturerecog/";
     private String selectedString = "";
+    private int noOfTimesPlayed = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +94,7 @@ public class Screen_2_Practice extends AppCompatActivity {
                 //pathToVideo = "android.resource://com.example.gesturerecog/" + R.raw.h0;
                 videoView.setVideoURI(Uri.parse(pathToVideo));
                 videoView.start();
+                noOfTimesPlayed++;
             }
         });
 
@@ -108,12 +111,17 @@ public class Screen_2_Practice extends AppCompatActivity {
         practice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle b = new Bundle();
-                b.putString("selectedItem",selectedString);
-                System.out.println("Sent String"+selectedString);
-                Intent newIntent = new Intent(Screen_2_Practice.this,Screen_3_Vid_Record.class);
-                newIntent.putExtras(b);
-                startActivity(newIntent);
+                if(noOfTimesPlayed >= 3) {
+                    Bundle b = new Bundle();
+                    b.putString("selectedItem", selectedString);
+                    System.out.println("Sent String" + selectedString);
+                    Intent newIntent = new Intent(Screen_2_Practice.this, Screen_3_Vid_Record.class);
+                    newIntent.putExtras(b);
+                    startActivity(newIntent);
+                }
+                else{
+                    Toast.makeText(getApplicationContext(),"You should play the practice video at least 3 times.",Toast.LENGTH_LONG).show();
+                }
             }
         });
 

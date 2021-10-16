@@ -68,7 +68,7 @@ public class Global {
         gestureMap.put("Set Thermostat to specified temperature", 7);
         gestureMap.put("0", 8);
         gestureMap.put("1", 9);
-        gestureMap.put("2", 0);
+        gestureMap.put("2", 10);
         gestureMap.put("3", 11);
         gestureMap.put("4", 12);
         gestureMap.put("5", 13);
